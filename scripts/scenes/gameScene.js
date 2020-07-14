@@ -34,18 +34,26 @@ class gameScene extends Phaser.Scene {
             y+=45;
             for(let j = 0; j < 8; j++){
                 x+=45;
-                objs[i,j] = this.add.sprite(x, y, objsTitle[Math.round(Math.random()*5)]).setInteractive();
+                this.button = this.add.sprite(x, y, objsTitle[Math.round(Math.random()*5)]).setInteractive();
+                // this.add.sprite(xy.x, xy.y - 96, 'start').setInteractive();
+                // this.button.on('pointerover', function(){this.button.setTint(0xf0ff00);}, this)
+                // this.button.on('pointerout', function(){this.button.setTint(0xffffff);}, this)
+                this.button.on('pointerdown', function(){
+                   console.log("good", this);
+                   this.setTint(0xf0ff00);
+                });
             }
             x = 25;
         }
 
-        console.log(objs)
+        this.button.emit('pointerdown');
+        // console.log(objs)
         // add some obj
         // this.book = this.add.sprite(50, 125,'book').setInteractive();
         
-        objs[0][0].on('pointerdown', function(){
-            console.log("Book work")            
-        });
+        // ob.on('pointerdown', function(){
+        //     console.log("Book work")            
+        // });
 
             // this.book =this.add.sprite(70, 70,'case')
             // this.book =this.add.sprite(115, 70,'fish')
