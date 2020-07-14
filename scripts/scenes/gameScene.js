@@ -13,7 +13,7 @@ class gameScene extends Phaser.Scene {
         this.load.image("fish", "assets/img/objects/fish.png");
         this.load.image("money", "assets/img/objects/money.png");
         this.load.image("fire", "assets/img/objects/fire.png");
-        this.load.image("palatka", "assets/img/objects/palatka.png");
+        this.load.image("tent", "assets/img/objects/tent.png");
 
 
         //ships
@@ -25,19 +25,33 @@ class gameScene extends Phaser.Scene {
         this.background =  this.add.tileSprite(0, 0, config.width, config.height, "background");
         this.background.setOrigin(0,0);
 
+        let objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent'];
+        let objs =[]
+
+        let x = 25;
+        let y = 25;
+        for(let i = 0; i < 8; i++){
+            y+=45;
+            for(let j = 0; j < 8; j++){
+                x+=45;
+                objs[i,j] = this.add.sprite(x, y, objsTitle[Math.round(Math.random()*5)]).setInteractive();
+            }
+            x = 25;
+        }
+
+        console.log(objs)
         // add some obj
-        this.book = this.add.sprite(50, 125,'book').setInteractive();
+        // this.book = this.add.sprite(50, 125,'book').setInteractive();
         
-        this.book.on('pointerdown', function(){
+        objs[0][0].on('pointerdown', function(){
             console.log("Book work")            
         });
 
-
-        this.book =this.add.sprite(100, 125,'case')
-        this.book =this.add.sprite(150, 125,'fish')
-        this.book =this.add.sprite(200, 125,'money')
-        this.book =this.add.sprite(250, 125,'fire')
-        this.book =this.add.sprite(300, 125,'palatka')
+            // this.book =this.add.sprite(70, 70,'case')
+            // this.book =this.add.sprite(115, 70,'fish')
+            // this.book =this.add.sprite(70, 115,'money')
+            // this.book =this.add.sprite(250, 125,'fire')
+            // this.book =this.add.sprite(300, 125,'tent')
 
         this.anims.create({
             key: "object1",
