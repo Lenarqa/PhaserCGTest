@@ -36,11 +36,18 @@ class gameScene extends Phaser.Scene {
                 x+=45;
                 this.button = this.add.sprite(x, y, objsTitle[Math.round(Math.random()*5)]).setInteractive();
                 // this.add.sprite(xy.x, xy.y - 96, 'start').setInteractive();
-                // this.button.on('pointerover', function(){this.button.setTint(0xf0ff00);}, this)
-                // this.button.on('pointerout', function(){this.button.setTint(0xffffff);}, this)
+                this.button.on('pointerover', function(){
+                    this.setTint(0xf0ff00);
+                    this.setScale(1.2);
+                })
+                this.button.on('pointerout', function(){
+                    this.setTint(0xffffff);
+                    this.setScale(1);
+                })
                 this.button.on('pointerdown', function(){
                    console.log("good", this);
                    this.setTint(0xf0ff00);
+                   
                 });
             }
             x = 25;
@@ -68,7 +75,7 @@ class gameScene extends Phaser.Scene {
             repeat: -1  
         });
 
-        this.add.text(config.width/2.4, config.height/8,"Welcom");
+        this.add.text(config.width/2.4, config.height/20,"Welcom");
     }
 
 }
