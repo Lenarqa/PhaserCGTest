@@ -3,7 +3,7 @@ console.log("Начало всего");
 var config = {
     width: 500,
     height: 500,
-    // scene: [MenuScene, GameScene],
+    scene: [gameScene],
     parent: 'mainGameScene',
     physics: {
         default: "arcade",
