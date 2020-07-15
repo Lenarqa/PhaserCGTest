@@ -21,21 +21,27 @@ class gameScene extends Phaser.Scene {
     }
 
     create(){
+        let MAP_SIZE = 8;
         // background
         this.background =  this.add.tileSprite(0, 0, config.width, config.height, "background");
         this.background.setOrigin(0,0);
 
         let objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent'];
-        let objs =[]
+        let objsId = new Array();
 
         let x = 25;
         let y = 25;
-        for(let i = 0; i < 8; i++){
+        for(let i = 0; i < MAP_SIZE; i++){
             y+=45;
-            for(let j = 0; j < 8; j++){
+            objsId[i] = new Array(); 
+            for(let j = 0; j < MAP_SIZE; j++){
                 x+=45;
-                this.button = this.add.sprite(x, y, objsTitle[Math.round(Math.random()*5)]).setInteractive();
-                // this.add.sprite(xy.x, xy.y - 96, 'start').setInteractive();
+                let objId = Math.round(Math.random()*5);
+                objsId[i][j] = objId;
+                this.button = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
+                this.button.id = objId;
+                this.button.i = i;
+                this.button.j = j;
                 this.button.on('pointerover', function(){
                     this.setTint(0xf0ff00);
                     this.setScale(1.2);
@@ -45,14 +51,15 @@ class gameScene extends Phaser.Scene {
                     this.setScale(1);
                 })
                 this.button.on('pointerdown', function(){
-                   console.log("good", this);
-                   this.setTint(0xf0ff00);
-                   
+                    console.log(`obj = ${objsTitle[this.id]} x = ${this.i} y = ${this.j}`);
+                //    console.log("good " +  this.id, + "x = " + this.i  + "y = " + this.i);
+                //    this.setTint(0xf0ff00);
                 });
             }
             x = 25;
         }
 
+        console.log(objsId)
         this.button.emit('pointerdown');
         // console.log(objs)
         // add some obj
