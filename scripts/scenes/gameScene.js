@@ -1,8 +1,11 @@
+var info;
+var timer;
+
 class gameScene extends Phaser.Scene {
     constructor() {
         super("gameScene");
     }
-    
+
     preload(){
         //background
         this.load.image("background", "assets/img/bg.png");
@@ -14,10 +17,20 @@ class gameScene extends Phaser.Scene {
         this.load.image("money", "assets/img/objects/money.png");
         this.load.image("fire", "assets/img/objects/fire.png");
         this.load.image("tent", "assets/img/objects/tent.png");
+    }
 
-
-        //ships
-        // this.load.spritesheet("ship", "assets/spritesheets/ship.png", {frameWidth: 16, frameHeight: 16});
+    static renderMap(MAP_SIZE, objsId, objsTitle){
+        let x = 25;
+        let y = 25;
+    
+        for(let i = 0; i < MAP_SIZE; i++){
+            y+=45;
+            for(let j = 0; j < MAP_SIZE; j++){
+                x+=45;
+                this.button = this.add.sprite(x, y, objsTitle[objsId[i][j]]).setInteractive();          
+            }
+            x = 25;
+        }
     }
 
     create(){
@@ -28,6 +41,9 @@ class gameScene extends Phaser.Scene {
 
         let objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent'];
         let objsId = new Array();
+
+        let playerClick = 0;
+        let tempObj = {i: 0, j: 0};
 
         let x = 25;
         let y = 25;
@@ -42,47 +58,76 @@ class gameScene extends Phaser.Scene {
                 this.button.id = objId;
                 this.button.i = i;
                 this.button.j = j;
+                
                 this.button.on('pointerover', function(){
                     this.setTint(0xf0ff00);
                     this.setScale(1.2);
                 })
+                
                 this.button.on('pointerout', function(){
                     this.setTint(0xffffff);
                     this.setScale(1);
                 })
+                
                 this.button.on('pointerdown', function(){
-                    console.log(`obj = ${objsTitle[this.id]} x = ${this.i} y = ${this.j}`);
-                //    console.log("good " +  this.id, + "x = " + this.i  + "y = " + this.i);
-                //    this.setTint(0xf0ff00);
+                    
+                    switch(playerClick){
+                        case 2:{
+                            playerClick++;
+                            console.log("Выбран второй объект");
+                            playerClick = 0;
+                            break;
+                        }
+                        case 1:{
+                            playerClick++;
+                            console.log("Выбран первый объект");
+                            tempObj.i = this.i;
+                            tempObj.j = this.j;
+                            console.log(tempObj);
+                            break;
+                        }
+                        case 0: {
+                            playerClick++;
+                            console.log("Объект не выбран")
+                            break;
+                        }
+                    }
+                    // console.log(playerClick);
+                    console.log(`obj = ${objsTitle[this.id]} x = ${this.i} y = ${this.j}`);//test log
+                    console.log(this)
+                    // this.setTint(0xf0ff00);
                 });
             }
             x = 25;
         }
 
-        console.log(objsId)
-        this.button.emit('pointerdown');
-        // console.log(objs)
-        // add some obj
-        // this.book = this.add.sprite(50, 125,'book').setInteractive();
-        
-        // ob.on('pointerdown', function(){
-        //     console.log("Book work")            
-        // });
 
-            // this.book =this.add.sprite(70, 70,'case')
-            // this.book =this.add.sprite(115, 70,'fish')
-            // this.book =this.add.sprite(70, 115,'money')
-            // this.book =this.add.sprite(250, 125,'fire')
-            // this.book =this.add.sprite(300, 125,'tent')
 
-        this.anims.create({
-            key: "object1",
-            frames: this.anims.generateFrameNumbers("gameObjects"),
-            frameRate: 20,
-            repeat: -1  
-        });
-
-        this.add.text(config.width/2.4, config.height/20,"Welcom");
+        info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
+        timer = this.time.addEvent({ delay: 10000, callback: gameOver, callbackScope: this });
     }
 
+    update(){
+        this.background.tilePositionY -= 0.5;
+        info.setText('\nTime: ' + Math.floor(10000 - timer.getElapsed()));
+    }
+
+}
+
+function gameOver(){
+    console.log("Game over")
+}
+
+function changeObjs(obj1, obj2){
+    let tempI = 0;
+    let tempJ = 0;
+
+    tempI = obj1.i;
+    tempJ = obj1.j;
+
+    obj1.i = obj2.i;
+    obj1.j = obj2.j;
+
+    obj2.i = tempI;
+    obj2.j = tempJ;    
 }
