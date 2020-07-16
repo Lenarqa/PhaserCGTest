@@ -164,6 +164,7 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
     let x = 25;
     let y = 25;
     console.log(`MAP_SIZE ${MAP_SIZE}, objsID ${objsID}, gameObjs ${gameObjs}`);
+    gameObjs.clear();
 
     // gameObjs.delete();//не забыть очистить группу!
     for(let i = 0; i < MAP_SIZE; i++){
