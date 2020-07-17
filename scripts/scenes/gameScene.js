@@ -1,22 +1,31 @@
+//game config vars
 const MAP_SIZE = 8;
-var info;
-var timer;
 var playerClick = 1;
 var objsID = [];
 var tempObj = {i: 0, j: 0};
 var gameObjs;
 var THIS;
 var objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent','book'];
-
 var isNear = false;
 var isGameOver = false;
+var gameTime = 5000;
+var isMute = true;
+
+// text
+var info;
+var gameOverText = [];
+
+// stats
+var timer;
+var playerStepNum = 0;//коилиство ходов игрока
+var score = 0;
+
 
 // sounds
 var bgMusic;
 var goodChoiceSound;
 var noGoodChoiceSound;
 var theEndMusic;
-var isMute = true;
 
 
 
@@ -72,10 +81,12 @@ class gameScene extends Phaser.Scene {
         });
 
         sound_on.setScale(0.3);
+        sound_on.setDepth(10);
         sound_on.setInteractive();
         sound_off.setVisible(false);
 
         sound_off.setScale(0.3);
+        sound_off.setDepth(10);
         sound_off.setInteractive();
         
         sound_off.on('pointerdown', ()=>{
@@ -124,12 +135,9 @@ class gameScene extends Phaser.Scene {
         //     // this.renderMap(MAP_SIZE, objsTitle)
         // }, 3000);
 
-        // this.add.text(config.width/2.4, config.height/20,"Welcom");
-
-
         // timer
         info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
-        timer = this.time.addEvent({ delay: 30000, callback: gameOver, callbackScope: this });
+        timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
     }
 
     update(){
@@ -137,7 +145,7 @@ class gameScene extends Phaser.Scene {
         this.background.tilePositionY -= 0.5;
         
         // timer
-        info.setText('Time: ' + Math.floor(30000 - timer.getElapsed()));
+        info.setText('Time: ' + Math.floor(gameTime - timer.getElapsed()));
     }
 
     chooseObj(){    
@@ -151,6 +159,7 @@ class gameScene extends Phaser.Scene {
                 playerClick = 1;
 
                 if(isNearTest(tempObj, this)){
+                    playerStepNum++;
                     if(!isMute){
                         goodChoiceSound.play();
                     }
@@ -181,7 +190,6 @@ class gameScene extends Phaser.Scene {
     }
 
     renderMap(MAP_SIZE, objsTitle, gameObjs, playerClick, objsID){
-        // console.log("player click", playerClick)
         let x = 25;
         let y = 25;
 
@@ -211,21 +219,61 @@ class gameScene extends Phaser.Scene {
             }
             x = 25;
         }
+        
+        // Кастыль
+        /* Чтобы в конце игры игрок не видел поля сгенерированного в первый раз, 
+            мы удаляем поле через после окончания таймера.*/
 
-        AnalizMap(objsID, MAP_SIZE);//пока что не работает 
-        console.log("objsID", objsID)
+        setTimeout(()=>{
+            gameObjs.clear(true);
+        }, gameTime-2);
+
+        // AnalizMap(objsID, MAP_SIZE);//пока что не работает 
+        // console.log("objsID", objsID)
     }
 }
 
 function gameOver(){
-    // gameObjs.clear();
-    gameObjs.setVisible(false); //срабатывает если игрок не сделал ни одного хода
-
     console.log("Game over");
+    gameObjs.clear(true);
+
+    
+    gameOverText[0] = THIS.add.text(config.width * 0.30, config.height * 0.1,"Game Over", {font: "40px Arial", fill: "#fff"});
+    gameOverText[1] =THIS.add.text(config.width * 0.40, config.height * 0.2,"Results:", {font: "35px Arial", fill: "#fff"});
+    gameOverText[3] =THIS.add.text(config.width * 0.42, config.height * 0.3,`score: ${score}`, {font: "30px Arial", fill: "#fff"});
+    gameOverText[4] =THIS.add.text(config.width * 0.40, config.height * 0.4,`swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"});
+    
+    let restart = THIS.add.text(config.width * 0.36, config.height * 0.55,"RESTART", {font: "35px Arial", fill: "#fff"});
+    restart.setInteractive();
+    gameOverText[5] = restart;
+
+    restart.on('pointerdown', Restart, this);
+                
+    restart.on('pointerout', function(){
+        this.setTint(0xffffff);
+    })
+
+    restart.on('pointerover', function(){
+        this.setTint(0xf0ff00);
+    })
+
     if(!isMute){
         bgMusic.stop();
         theEndMusic.play();
     }
+}
+
+function Restart(){
+    // gameOverText.forEach(e => {
+    //     e.destroy();
+    // });
+    if(!isMute){
+        goodChoiceSound.play();
+    }
+    
+    score = 0;
+    playerStepNum = 0;
+    THIS.scene.start('gameScene');
 }
 
  function swapObjs(tempObj, thisObj, objsID){
@@ -250,7 +298,7 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
     let y = 25;
     // console.log(`MAP_SIZE ${MAP_SIZE}, objsID ${objsID}, gameObjs ${gameObjs}`);
 
-    gameObjs.clear();
+    gameObjs.clear(true);
 
     for(let i = 0; i < MAP_SIZE; i++){
         y+=45;
