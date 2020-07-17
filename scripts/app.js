@@ -7,6 +7,9 @@ var config = {
     parent: 'mainGameScene',
     physics: {
         default: "arcade",
+    },
+    audio: {
+        disableWebAudio: true
     }
 }
 
