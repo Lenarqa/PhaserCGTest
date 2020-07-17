@@ -12,3 +12,22 @@ body{
     height: 100vh;
     margin: 0 auto;
 }
+
+.todo{
+    width: 100%;
+}
+
+.todo-item{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+}
+
+.todo-item h2{
+    text-align: center;
+}
+
+.todo-item:first-child{
+    border-right: 1px solid #000;
+}
