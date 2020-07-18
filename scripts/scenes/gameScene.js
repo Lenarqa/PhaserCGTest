@@ -1,5 +1,5 @@
 //game config vars
-const MAP_SIZE = 8;
+const MAP_SIZE = 10;
 var playerClick = 1;
 var objsID = [];
 var tempObj = {i: 0, j: 0};
@@ -8,8 +8,10 @@ var THIS;
 var objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent','book'];
 var isNear = false;
 var isGameOver = false;
-var gameTime = 5000;
+var gameTime = 100000;
 var isMute = true;
+var masksArr = [];//трехмерный массив масок
+var masksArrSize = [];//двумерный массив
 
 // text
 var info;
@@ -26,8 +28,6 @@ var bgMusic;
 var goodChoiceSound;
 var noGoodChoiceSound;
 var theEndMusic;
-
-
 
 class gameScene extends Phaser.Scene {
     constructor() {
@@ -200,10 +200,15 @@ class gameScene extends Phaser.Scene {
                 x+=45;
                 let objId = Math.round(Math.random() * (6-1) + 1);
                 objsID[i][j] = objId;
-
-                let obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
+                
+                let obj = {};
                 obj.i = i;
                 obj.j = j;
+
+                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали
+                objId = AnalizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали
+                
+                obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
                 
                 obj.on('pointerdown', this.chooseObj, this.obj,);
                 
@@ -223,29 +228,26 @@ class gameScene extends Phaser.Scene {
         // Кастыль
         /* Чтобы в конце игры игрок не видел поля сгенерированного в первый раз, 
             мы удаляем поле через после окончания таймера.*/
-
         setTimeout(()=>{
             gameObjs.clear(true);
         }, gameTime-2);
-
-        // AnalizMap(objsID, MAP_SIZE);//пока что не работает 
-        // console.log("objsID", objsID)
     }
 }
 
 function gameOver(){
     console.log("Game over");
     gameObjs.clear(true);
+    THIS.background.setDepth(2).setInteractive();
 
     
-    gameOverText[0] = THIS.add.text(config.width * 0.30, config.height * 0.1,"Game Over", {font: "40px Arial", fill: "#fff"});
-    gameOverText[1] =THIS.add.text(config.width * 0.40, config.height * 0.2,"Results:", {font: "35px Arial", fill: "#fff"});
-    gameOverText[3] =THIS.add.text(config.width * 0.42, config.height * 0.3,`score: ${score}`, {font: "30px Arial", fill: "#fff"});
-    gameOverText[4] =THIS.add.text(config.width * 0.40, config.height * 0.4,`swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"});
+    THIS.add.text(config.width * 0.30, config.height * 0.1,"Game Over", {font: "40px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.40, config.height * 0.2,"Results:", {font: "35px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.42, config.height * 0.3,`score: ${score}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.40, config.height * 0.4,`swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
     
-    let restart = THIS.add.text(config.width * 0.36, config.height * 0.55,"RESTART", {font: "35px Arial", fill: "#fff"});
+    let restart = THIS.add.text(config.width * 0.36, config.height * 0.55,"RESTART", {font: "35px Arial", fill: "#fff"}).setDepth(10);
     restart.setInteractive();
-    gameOverText[5] = restart;
+    restart.setDepth(10);
 
     restart.on('pointerdown', Restart, this);
                 
@@ -258,15 +260,17 @@ function gameOver(){
     })
 
     if(!isMute){
-        bgMusic.stop();
+        bgMusic.pause();
         theEndMusic.play();
+
+        // выкл фоновую музыку во время конца игры
+        setTimeout(() => {
+            bgMusic.resume();
+        }, 2800);
     }
 }
 
 function Restart(){
-    // gameOverText.forEach(e => {
-    //     e.destroy();
-    // });
     if(!isMute){
         goodChoiceSound.play();
     }
@@ -337,63 +341,37 @@ function isNearTest(tempObj, thisObj){
     }
 }
 
-function AnalizMap(objsID, MAP_SIZE){
+function AnalizHorizontalMap(objsID, obj){
     // console.log("welcom to analiz");
-    // console.log("analiz MAP_SIZE = ", MAP_SIZE);
 
-    let colObj = 0;//количество подряд идущих объектов в группе
-    let colID = 0; //количесво групп (факел, палатка и т.д)
-    let goodGroup = 0;//готовые группы (>2 идущих подрят объектов)
-
-    for (let y = 0; y < MAP_SIZE; y++) {
-        for (let x = 0; x < MAP_SIZE; x++) {
-            if(x == 0){
-                colID = objsID[y][x];
-            }
-            if(colID == objsID[y][x]){
-
-                // console.log("Повтор " + colID + " objID = "+ objsID[y][x])
-            }
+    if(obj.j == 0 || obj.j == 1){
+        return  objsID[obj.i][obj.j];
+    }else if((objsID[obj.i][obj.j-1] == objsID[obj.i][obj.j]) && (objsID[obj.i][obj.j-2] == objsID[obj.i][obj.j])){
+        if(objsID[obj.i][obj.j] == objsTitle.length){
+            objsID[obj.i][obj.j]--;
+            return objsID[obj.i][obj.j];
+        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length){
+            objsID[obj.i][obj.j]++;
+            return objsID[obj.i][obj.j];
         }
-        
+    }else{
+        return objsID[obj.i][obj.j];
     }
 }
-    // for (let y = 0; y < MAP_SIZE; y++) {
-    //     colObj = 0;
-    //     for (let x = 0; x < MAP_SIZE; x++) {
-    //         if(x == 0){
-    //             colID = Math.abs(objsID[x][y]);
-    //             console.log("colID = ", colID);
-    //         }
-            
-    //         if(colID == Math.abs(objsID[x][y])){
-    //             colObj++;
-    //         }else if(colObj > 2){
-    //             goodGroup++;
 
-    //             for (let z = 0; z < colObj-1; z++) {//точно ли минус один?
-    //                 // console.log(objsID[Math.abs(x-colObj+z)][y]);
-    //                 let x1 = x - colObj + z;
-    //                 objsID[x1][y] = Math.abs(objsID[x][y]) * (-1);
-    //             }
-    //             console.log("good group = ", goodGroup);
-    //             colID = objsID[x][y];
-    //             colObj = 1;
-    //         }
-    //         if((y == MAP_SIZE) && colObj > 2){
-    //             goodGroup++;
-
-    //             for (let z = 0; z < colObj; z++) {//точно ли минус один?
-    //                 let x1 = x - colObj + z;
-    //                 objsID[x1][y] = Math.abs(objsID[x][y]) * (-1);
-    //             }
-    //         }
-    //     }  
-//     }
-
-//     console.log(goodGroup);
-//     console.log("analiz objsID = ", objsID);
-
-
-// }
+function AnalizVerticalMap(objsID, obj){
+    if(obj.i == 0 || obj.i == 1){
+        return  objsID[obj.i][obj.j];
+    }else if((objsID[obj.i-1][obj.j] == objsID[obj.i][obj.j]) && (objsID[obj.i-2][obj.j] == objsID[obj.i][obj.j])){
+        if(objsID[obj.i][obj.j] == objsTitle.length){
+            objsID[obj.i][obj.j]--;
+            return objsID[obj.i][obj.j];
+        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length){
+            objsID[obj.i][obj.j]++;
+            return objsID[obj.i][obj.j];
+        }
+    }else{
+        return objsID[obj.i][obj.j];
+    }
+}
 
