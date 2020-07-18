@@ -1,14 +1,14 @@
 //game config vars
-const MAP_SIZE = 10;
+const MAP_SIZE = 8;
 var playerClick = 1;
 var objsID = [];
 var tempObj = {i: 0, j: 0};
 var gameObjs;
 var THIS;
-var objsTitle = ['book', 'case', 'fish', 'money', 'fire', 'tent','book'];
+var objsTitle = ['', 'case', 'fish', 'money', 'fire', 'tent','book'];
 var isNear = false;
 var isGameOver = false;
-var gameTime = 100000;
+var gameTime = 30000; // в мл cек
 var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
@@ -25,9 +25,10 @@ var score = 0;
 
 // sounds
 var bgMusic;
+var theEndMusic;
 var goodChoiceSound;
 var noGoodChoiceSound;
-var theEndMusic;
+var woohooSound;
 
 class gameScene extends Phaser.Scene {
     constructor() {
@@ -57,6 +58,7 @@ class gameScene extends Phaser.Scene {
         this.load.audio('GoodChoice', 'assets/sounds/GoodChoice.mp3');
         this.load.audio('noGoodChoice', 'assets/sounds/noGoodChoice.mp3');
         this.load.audio('theEnd', 'assets/sounds/theEnd.mp3');
+        this.load.audio('woohoo', 'assets/sounds/woohoo.mp3');
     }
 
     create(){
@@ -121,6 +123,11 @@ class gameScene extends Phaser.Scene {
             loop: false
         });
 
+        // woohoo sound
+        woohooSound = this.sound.add('woohoo', {
+            volume: 0.7,
+            loop: false
+        });
 
 
         // console.log("groups = ", gameObjs.getLength());
@@ -158,14 +165,21 @@ class gameScene extends Phaser.Scene {
 
                 playerClick = 1;
 
-                if(isNearTest(tempObj, this)){
+                if(isNearTest(tempObj, this) && isThree(tempObj, this)){
+                    score+=100;
                     playerStepNum++;
                     if(!isMute){
                         goodChoiceSound.play();
+                        // woohooSound.play(); 
                     }
+
                     objsID = swapObjs(tempObj, this, objsID);
-                    updateMap(MAP_SIZE, objsID, gameObjs, THIS); 
+                    updateMap(MAP_SIZE, objsID, gameObjs, THIS);
+                    objsID = changeObjects();
+                    
+                    updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }else{
+                    playerStepNum++;
                     if(!isMute){
                         noGoodChoiceSound.play()
                     }
@@ -205,7 +219,7 @@ class gameScene extends Phaser.Scene {
                 obj.i = i;
                 obj.j = j;
 
-                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали
+                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали 
                 objId = AnalizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали
                 
                 obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
@@ -230,12 +244,38 @@ class gameScene extends Phaser.Scene {
             мы удаляем поле через после окончания таймера.*/
         setTimeout(()=>{
             gameObjs.clear(true);
-        }, gameTime-2);
+        }, gameTime);
     }
 }
 
+function changeObjects(){
+    for (let i = 0; i < objsID.length; i++) {
+        for (let j = 0; j < objsID[i].length; j++) {
+            if(objsID[i][j] == objsID[i][j+1] && objsID[i][j] == objsID[i][j+2]){
+                objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
+                objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
+                objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
+            }
+        }
+    }
+
+    for (let i = 0; i < objsID.length; i++) {
+        for (let j = 0; j < objsID[i].length-2; j++) {
+            if(objsID[j][i] == objsID[j+1][i] && objsID[j][i] == objsID[j+2][i]){
+                objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
+                objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
+                objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
+            }
+        }
+}
+
+    return objsID;
+
+
+}
+
 function gameOver(){
-    console.log("Game over");
+    // console.log("Game over");
     gameObjs.clear(true);
     THIS.background.setDepth(2).setInteractive();
 
@@ -263,11 +303,50 @@ function gameOver(){
         bgMusic.pause();
         theEndMusic.play();
 
-        // выкл фоновую музыку во время конца игры
+        // выкл фоновую музыку на время проигрывания музыки конца игры
         setTimeout(() => {
             bgMusic.resume();
         }, 2800);
     }
+}
+
+function isThree(tempObj, thisObj){
+    let col = 0;
+    
+    let tempObjsID = objsID.map(function(arr) {
+        return arr.slice();
+    });
+
+    tempObjsID = swapObjs(tempObj, thisObj, tempObjsID);
+    // console.log("new = ", objsID);
+    
+    for (let i = 0; i < tempObjsID.length; i++) {
+        for (let j = 0; j < tempObjsID[i].length; j++) {
+            if(tempObjsID[i][j] == tempObjsID[i][j+1] && tempObjsID[i][j] == tempObjsID[i][j+2]){
+                // console.log("три в ряд горизонталь");
+                col++;
+            }
+        }
+    }
+
+    for (let i = 0; i < tempObjsID.length; i++) {
+        for (let j = 0; j < tempObjsID[i].length-2; j++) {
+            if(tempObjsID[j][i] == tempObjsID[j+1][i] && tempObjsID[j][i] == tempObjsID[j+2][i]){
+                // console.log("три в ряд вертикаль");
+                col++;
+            }
+        }
+    }
+
+    if(col > 0){
+        return true;
+    }else{
+        return false;
+    }
+
+    // updateMap(MAP_SIZE, objId, gameObjs);
+    // if ()
+    // if(tempObj[i][j] == tempObj[i][j+1])
 }
 
 function Restart(){
@@ -330,7 +409,7 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
         }
         x = 25;
     }
-    console.log("UpdateMap GameObj", gameObjs.getLength());
+    // console.log("UpdateMap GameObj", gameObjs.getLength());
 }
 
 function isNearTest(tempObj, thisObj){
@@ -350,7 +429,7 @@ function AnalizHorizontalMap(objsID, obj){
         if(objsID[obj.i][obj.j] == objsTitle.length){
             objsID[obj.i][obj.j]--;
             return objsID[obj.i][obj.j];
-        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length){
+        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length-1){
             objsID[obj.i][obj.j]++;
             return objsID[obj.i][obj.j];
         }
@@ -366,7 +445,7 @@ function AnalizVerticalMap(objsID, obj){
         if(objsID[obj.i][obj.j] == objsTitle.length){
             objsID[obj.i][obj.j]--;
             return objsID[obj.i][obj.j];
-        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length){
+        }else if(objsID[obj.i][obj.j] == 1 || objsID[obj.i][obj.j] < objsTitle.length-1){
             objsID[obj.i][obj.j]++;
             return objsID[obj.i][obj.j];
         }

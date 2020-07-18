@@ -8,6 +8,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 1024px;
     height: 100vh;
     margin: 0 auto;
@@ -26,8 +27,4 @@ body{
 
 .todo-item h2{
     text-align: center;
-}
-
-.todo-item:first-child{
-    border-right: 1px solid #000;
 }
