@@ -17,6 +17,10 @@ body{
 .todo{
     margin-top: 2rem;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .todo-item{
