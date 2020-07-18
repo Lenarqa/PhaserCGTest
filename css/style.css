@@ -15,6 +15,7 @@ body{
 }
 
 .todo{
+    margin-top: 2rem;
     width: 100%;
 }
 
@@ -22,9 +23,9 @@ body{
     display: flex;
     flex-direction: column;
     width: 50%;
-    height: 100%;
 }
 
 .todo-item h2{
+    text-transform: uppercase;
     text-align: center;
 }
