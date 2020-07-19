@@ -162,8 +162,9 @@ class gameScene extends Phaser.Scene {
 
                     objsID = swapObjs(tempObj, this, objsID);
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
-                    objsID = changeObjects();
-                    objsID = nullInTop(objsID);
+                    objsID = changeObjects();//удаляем 3
+                    objsID = nullInTop(objsID);//сдвигаем все элементы вниз
+                    objsID = addNewElementsID(objsID);//заменяем id 0 на новый.
                     
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }else{
@@ -333,6 +334,21 @@ function isThree(tempObj, thisObj){
     }else{
         return false;
     }
+}
+
+function addNewElementsID(objsID){
+    for (let i = 0; i < objsID.length; i++) {
+        for (let j = 0; j < objsID.length; j++) {
+            if(objsID[i][j] == 0){
+                objsID[i][j] = Math.round(Math.random() * (6-1) + 1);
+            }
+
+            if(objsID[i][j] == objsID[i][j+1] == objsID[i][j+2]){
+                objsID[i][j] = objsID[i][j] = Math.round(Math.random() * (6-1) + 1);
+            }
+        }
+    }
+    return objsID;
 }
 
 function nullInTop(objsID){
