@@ -163,6 +163,7 @@ class gameScene extends Phaser.Scene {
                     objsID = swapObjs(tempObj, this, objsID);
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                     objsID = changeObjects();
+                    objsID = nullInTop(objsID);
                     
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }else{
@@ -239,9 +240,12 @@ function changeObjects(){
     for (let i = 0; i < objsID.length; i++) {
         for (let j = 0; j < objsID[i].length; j++) {
             if(objsID[i][j] == objsID[i][j+1] && objsID[i][j] == objsID[i][j+2]){
-                objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
-                objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
-                objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
+                // objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
+                // objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
+                // objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
+                objsID[i][j] = 0;
+                objsID[i][j+1] = 0;
+                objsID[i][j+2] = 0;
             }
         }
     }
@@ -249,9 +253,12 @@ function changeObjects(){
     for (let i = 0; i < objsID.length; i++) {
         for (let j = 0; j < objsID[i].length-2; j++) {
             if(objsID[j][i] == objsID[j+1][i] && objsID[j][i] == objsID[j+2][i]){
-                objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
-                objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
-                objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
+                // objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
+                // objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
+                // objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
+                objsID[j][i] = 0;//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
+                objsID[j+1][i] = 0;
+                objsID[j+2][i] = 0;
             }
         }
     }
@@ -326,6 +333,23 @@ function isThree(tempObj, thisObj){
     }else{
         return false;
     }
+}
+
+function nullInTop(objsID){
+    let pos = objsID.length - 1;
+    for (let i = 0; i < objsID.length; i++) {
+        pos = objsID.length-1;
+        for (let j = objsID.length-1; j >= 0; j--) {
+            if(objsID[j][i] != 0){
+                objsID[pos][i] = objsID[j][i];
+                pos--;
+            }
+        }
+        while(pos > -1){
+            objsID[pos--][i] = 0
+        }
+    }
+    return objsID;
 }
 
 function Restart(){
