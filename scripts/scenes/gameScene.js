@@ -1,9 +1,9 @@
 //game config vars
 const MAP_SIZE = 8;
 var playerClick = 1;
-var objsID = [];
+var objsID = [];//двумерный массив с id каждого объекта
 var tempObj = {i: 0, j: 0};
-var gameObjs;
+var gameObjs; //Phaser group
 var THIS;
 var objsTitle = ['', 'case', 'fish', 'money', 'fire', 'tent','book'];
 var isNear = false;
@@ -129,19 +129,6 @@ class gameScene extends Phaser.Scene {
             loop: false
         });
 
-
-        // console.log("groups = ", gameObjs.getLength());
-
-        // gameObjs.rotate(45, 2)
-        // gameObjs.setVisible(false);
- 
-        // setTimeout(()=>{
-        //     console.log("Перемешались");
-        //     gameObjs.shuffle();
-        //     // console.log("render map from setTimeOut");
-        //     // this.renderMap(MAP_SIZE, objsTitle)
-        // }, 3000);
-
         // timer
         info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
         timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
@@ -170,7 +157,7 @@ class gameScene extends Phaser.Scene {
                     playerStepNum++;
                     if(!isMute){
                         goodChoiceSound.play();
-                        // woohooSound.play(); 
+                        // woohooSound.play(); //второй вариант звука при уничтожении тройки.
                     }
 
                     objsID = swapObjs(tempObj, this, objsID);
@@ -219,8 +206,8 @@ class gameScene extends Phaser.Scene {
                 obj.i = i;
                 obj.j = j;
 
-                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали 
-                objId = AnalizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали
+                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали при создании карты
+                objId = AnalizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали при создании карты
                 
                 obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
                 
@@ -240,7 +227,7 @@ class gameScene extends Phaser.Scene {
         }
         
         // Кастыль
-        /* Чтобы в конце игры игрок не видел поля сгенерированного в первый раз, 
+        /* Чтобы в конце игры, игрок не видел поля сгенерированного в первый раз, 
             мы удаляем поле через после окончания таймера.*/
         setTimeout(()=>{
             gameObjs.clear(true);
@@ -267,15 +254,12 @@ function changeObjects(){
                 objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
             }
         }
-}
+    }
 
     return objsID;
-
-
 }
 
 function gameOver(){
-    // console.log("Game over");
     gameObjs.clear(true);
     THIS.background.setDepth(2).setInteractive();
 
@@ -318,7 +302,6 @@ function isThree(tempObj, thisObj){
     });
 
     tempObjsID = swapObjs(tempObj, thisObj, tempObjsID);
-    // console.log("new = ", objsID);
     
     for (let i = 0; i < tempObjsID.length; i++) {
         for (let j = 0; j < tempObjsID[i].length; j++) {
@@ -343,10 +326,6 @@ function isThree(tempObj, thisObj){
     }else{
         return false;
     }
-
-    // updateMap(MAP_SIZE, objId, gameObjs);
-    // if ()
-    // if(tempObj[i][j] == tempObj[i][j+1])
 }
 
 function Restart(){
@@ -389,19 +368,15 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
             x+=45;
     
             let obj = THIS.add.sprite(x, y, objsTitle[objsID[i][j]]).setInteractive();
-            // obj.clearTint();
             obj.i = i;
             obj.j = j;
-            // obj.setDepth(1);
             
             obj.on('pointerdown', THIS.chooseObj, THIS.obj);
             obj.on('pointerout', function(){
-                // this.setTint(0xffffff);
                 this.setScale(1);
             })
 
             obj.on('pointerover', function(){
-                // this.setTint(0xf0ff00);
                 this.setScale(1.2);
             })
 
@@ -409,7 +384,6 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
         }
         x = 25;
     }
-    // console.log("UpdateMap GameObj", gameObjs.getLength());
 }
 
 function isNearTest(tempObj, thisObj){
@@ -421,7 +395,6 @@ function isNearTest(tempObj, thisObj){
 }
 
 function AnalizHorizontalMap(objsID, obj){
-    // console.log("welcom to analiz");
 
     if(obj.j == 0 || obj.j == 1){
         return  objsID[obj.i][obj.j];
