@@ -1,8 +1,16 @@
-console.log("Начало всего");
+let mapSize = document.body.offsetWidth;
+let isMobile = false;
+if(mapSize < 700){
+    mapSize = document.body.offsetWidth;
+    isMobile = true;
+    
+}else{
+    mapSize = 500;
+}
 
 var config = {
-    width: 500,
-    height: 500,
+    width: mapSize,
+    height: mapSize,
     scene: [gameScene],
     parent: 'mainGameScene',
     physics: {

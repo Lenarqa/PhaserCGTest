@@ -156,8 +156,8 @@ class gameScene extends Phaser.Scene {
                     score+=100;
                     playerStepNum++;
                     if(!isMute){
-                        goodChoiceSound.play();
-                        // woohooSound.play(); //второй вариант звука при уничтожении тройки.
+                        // goodChoiceSound.play();
+                        woohooSound.play(); //второй вариант звука при уничтожении тройки.
                     }
 
                     objsID = swapObjs(tempObj, this, objsID);
@@ -197,10 +197,18 @@ class gameScene extends Phaser.Scene {
         let y = 25;
 
         for(let i = 0; i < MAP_SIZE; i++){
-            y+=45;
+            if(isMobile){
+                y+=50;
+            }else{
+                y+=45;
+            }
             objsID[i] = [];
             for(let j = 0; j < MAP_SIZE; j++){
-                x+=45;
+                if(isMobile){
+                    x+=50
+                }else{
+                    x+=45;
+                }
                 let objId = Math.round(Math.random() * (6-1) + 1);
                 objsID[i][j] = objId;
                 
@@ -213,14 +221,26 @@ class gameScene extends Phaser.Scene {
                 
                 obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
                 
+                if(isMobile){
+                    obj.setScale(1.3);
+                }
+                
                 obj.on('pointerdown', this.chooseObj, this.obj,);
                 
                 obj.on('pointerout', function(){
-                    this.setScale(1);
+                    if(isMobile){
+                        this.setScale(1.3)
+                    }else{
+                        this.setScale(1);
+                    }
                 })
 
                 obj.on('pointerover', function(){
-                    this.setScale(1.2);
+                    if(isMobile){
+                        this.setScale(1.3);
+                    }else{
+                        this.setScale(1.2);
+                    }
                 })
 
                 gameObjs.add(obj);
@@ -403,21 +423,44 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
     gameObjs.clear(true);
 
     for(let i = 0; i < MAP_SIZE; i++){
-        y+=45;
+        
+        if(isMobile){
+            y+=50;
+        }else{
+            y+=45;
+        }
+
         for(let j = 0; j < MAP_SIZE; j++){
-            x+=45;
+            if(isMobile){
+                x+=50;
+            }else{
+                x+=45;
+            }
     
             let obj = THIS.add.sprite(x, y, objsTitle[objsID[i][j]]).setInteractive();
+
+            if(isMobile){
+                obj.setScale(1.3);
+            }
+
             obj.i = i;
             obj.j = j;
             
             obj.on('pointerdown', THIS.chooseObj, THIS.obj);
             obj.on('pointerout', function(){
-                this.setScale(1);
+                if(isMobile){
+                    this.setScale(1.3);
+                }else{
+                    this.setScale(1);
+                }
             })
 
             obj.on('pointerover', function(){
-                this.setScale(1.2);
+                if(isMobile){
+                    this.setScale(1.5);
+                }else{
+                    this.setScale(1.2);
+                }
             })
 
             gameObjs.add(obj);
