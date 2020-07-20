@@ -1,5 +1,6 @@
 //game config vars
-const MAP_SIZE = 8;
+
+var MAP_SIZE = 8;
 var playerClick = 1;
 var objsID = [];//двумерный массив с id каждого объекта
 var tempObj = {i: 0, j: 0};
@@ -70,13 +71,24 @@ class gameScene extends Phaser.Scene {
         gameObjs = this.add.group();
         gameObjs.inputEnableChildren = true;
 
+        if(isMobile){
+            MAP_SIZE = 6;
+        }
+
         // create map
         this.renderMap(MAP_SIZE, objsTitle, gameObjs, playerClick, objsID);
         
 
         //sound_on and sound_off
-        let sound_on = this.add.image(25, 70, "sound_on");
-        let sound_off = this.add.image(25, 70, "sound_off");
+        let sound_on;
+        let sound_off;
+        if(isMobile){
+            sound_on = this.add.image(73, 25, "sound_on");
+            sound_off = this.add.image(73, 25, "sound_off");
+        }else{
+            sound_on = this.add.image(25, 70, "sound_on");
+            sound_off = this.add.image(25, 70, "sound_off");
+        }
         bgMusic = this.sound.add('mainBgSound', {
             volume: 0.5,
             loop: true
