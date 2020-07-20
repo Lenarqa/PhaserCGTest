@@ -34,8 +34,28 @@ body{
     text-align: center;
 }
 
+.mobile{
+    display: none;
+}
+
 @media(max-width: 700px){
+    /* #mainGameScene{
+        margin-top: 1rem;
+    } */
+
     .content h2 {
         display: none;
     }
+
+    .todo{
+        display: none;
+    }
+
+    .mobile{
+        display: block;
+        font-size: 2rem;
+        margin-top: 9rem;
+        padding: 0.5rem;
+    }
+
 }
