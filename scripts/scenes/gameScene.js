@@ -156,6 +156,7 @@ class gameScene extends Phaser.Scene {
 
     chooseObj(){    
         this.setTint(0xf0ff00);
+        // this.setTint(0xFFFF00);
 
         switch(playerClick){
             case 2:{
