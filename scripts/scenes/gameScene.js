@@ -13,7 +13,7 @@ var circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты 
 var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача']
 var isNear = false;
 var isGameOver = false;
-var gameTime = 60000; // в мл cек
+var gameTime = 30000; // в мл cек
 var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
@@ -96,8 +96,8 @@ class gameScene extends Phaser.Scene {
             sound_on = this.add.image(config.width * 0.05, config.height * 0.05, "sound_on");
             sound_off = this.add.image(config.width * 0.05, config.height * 0.05, "sound_off");
         }else{
-            sound_on = this.add.image(25, 70, "sound_on");
-            sound_off = this.add.image(25, 70, "sound_off");
+            sound_on = this.add.image(config.width * 0.05, config.height * 0.05, "sound_on");
+            sound_off = this.add.image(config.width * 0.05, config.height * 0.05, "sound_off");
         }
         bgMusic = this.sound.add('mainBgSound', {
             volume: 0.5,
@@ -190,7 +190,7 @@ class gameScene extends Phaser.Scene {
         scoreText.setText('Score : ' + score);
         
         // timer
-        info.setText('Time: ' + Math.floor(gameTime - timer.getElapsed()));
+        info.setText('Time: ' + Math.round(Math.floor(gameTime - timer.getElapsed())/1000));
     }
 
     chooseObj(){    
@@ -205,7 +205,7 @@ class gameScene extends Phaser.Scene {
                 playerClick = 1;
 
                 if(isNearTest(tempObj, this) && isThree(tempObj, this)){
-
+                    score += 100;
                     playerStepNum++;
                     if(!isMute){
                         // goodChoiceSound.play();
