@@ -93,8 +93,8 @@ class gameScene extends Phaser.Scene {
         let sound_on;
         let sound_off;
         if(isMobile){
-            sound_on = this.add.image(73, 25, "sound_on");
-            sound_off = this.add.image(73, 25, "sound_off");
+            sound_on = this.add.image(25, 25, "sound_on");
+            sound_off = this.add.image(25, 25, "sound_off");
         }else{
             sound_on = this.add.image(25, 70, "sound_on");
             sound_off = this.add.image(25, 70, "sound_off");
@@ -152,14 +152,17 @@ class gameScene extends Phaser.Scene {
         });
 
         // magic circle
-        circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle');
+        if(isMobile){
+            circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle');
+            circleText = this.add.text(config.width * 0.1, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+        }else{
+            circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle');
+            circleText = this.add.text(config.width * 0.15, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+        }
         circle.setScale(2);
         circle.maxY = config.height * 0.85;
         circle.minY = config.height * 0.9;
         circle.speed = 0.5;
-        
-        circleText = this.add.text(config.width * 0.1, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
-
 
         // scoreText
         scoreText = this.add.text(config.width/6, 5, '0', { font: '20px Arial', fill: '#ffff'});
@@ -224,7 +227,7 @@ class gameScene extends Phaser.Scene {
                         noGoodChoiceSound.play()
                     }
 
-                    circleText.setText(circleNoGoodText[Math.round(Math.random() * circleGoodText.length)]);
+                    circleText.setText(circleNoGoodText[Math.round(Math.random() * circleNoGoodText.length)]);
 
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }
