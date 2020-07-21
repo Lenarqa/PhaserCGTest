@@ -42,6 +42,9 @@ body{
     /* #mainGameScene{
         margin-top: 1rem;
     } */
+    .content{
+        height: auto;
+    }
 
     .content h2 {
         display: none;
@@ -54,8 +57,7 @@ body{
     .mobile{
         display: block;
         font-size: 2rem;
-        margin-top: 9rem;
-        padding: 0.5rem;
+        /* margin-top: 1rem */
     }
 
 }
