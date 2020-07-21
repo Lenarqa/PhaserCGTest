@@ -93,8 +93,8 @@ class gameScene extends Phaser.Scene {
         let sound_on;
         let sound_off;
         if(isMobile){
-            sound_on = this.add.image(25, 25, "sound_on");
-            sound_off = this.add.image(25, 25, "sound_off");
+            sound_on = this.add.image(config.width * 0.05, config.height * 0.05, "sound_on");
+            sound_off = this.add.image(config.width * 0.05, config.height * 0.05, "sound_off");
         }else{
             sound_on = this.add.image(25, 70, "sound_on");
             sound_off = this.add.image(25, 70, "sound_off");
