@@ -152,13 +152,13 @@ class gameScene extends Phaser.Scene {
         });
 
         // magic circle
-        circle = this.physics.add.sprite(config.width * 0.14, config.height * 0.9, 'circle');
+        circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle');
         circle.setScale(2);
         circle.maxY = config.height * 0.85;
         circle.minY = config.height * 0.9;
         circle.speed = 0.5;
         
-        circleText = this.add.text(config.width * 0.2, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+        circleText = this.add.text(config.width * 0.1, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
 
 
         // scoreText
@@ -224,7 +224,7 @@ class gameScene extends Phaser.Scene {
                         noGoodChoiceSound.play()
                     }
 
-                    circleText.setText(circleNoGoodText[Math.round(Math.random() * circleNoGoodText.length)]);
+                    circleText.setText(circleNoGoodText[Math.round(Math.random() * circleGoodText.length)]);
 
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }
