@@ -6,22 +6,29 @@ var objsID = [];//двумерный массив с id каждого объе�
 var tempObj = {i: 0, j: 0};
 var gameObjs; //Phaser group
 var THIS;
-var objsTitle = ['', 'case', 'fish', 'money', 'fire', 'tent','book'];
+var objsTitle =     ['', 'case', 'fish', 'money', 'fire', 'tent', 'book'];
+var objScorePoint = [0,   300,    10,      200,     100,     50,   150];
+var circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты молодец!', 'Хороший ход!', 
+                        'Отличное решение!', 'Невероятно!', 'Как ты это делаешь?!', 'Вот это да!'];
+var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача']
 var isNear = false;
 var isGameOver = false;
-var gameTime = 30000; // в мл cек
+var gameTime = 60000; // в мл cек
 var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
+var circle;
 
 // text
 var info;
-var gameOverText = [];
+var scoreText;
+var circleText;
 
 // stats
 var timer;
 var playerStepNum = 0;//коилиство ходов игрока
 var score = 0;
+
 
 
 // sounds
@@ -48,6 +55,9 @@ class gameScene extends Phaser.Scene {
         this.load.image("money", "assets/img/objects/money.png");
         this.load.image("fire", "assets/img/objects/fire.png");
         this.load.image("tent", "assets/img/objects/tent.png");
+
+        // circle
+        this.load.image('circle', "assets/img/circle.png")
 
         //sounds btn
         this.load.image('sound_on', 'assets/img/sound_on.png');
@@ -141,14 +151,40 @@ class gameScene extends Phaser.Scene {
             loop: false
         });
 
+        // magic circle
+        circle = this.physics.add.sprite(config.width * 0.14, config.height * 0.9, 'circle');
+        circle.setScale(2);
+        circle.maxY = config.height * 0.85;
+        circle.minY = config.height * 0.9;
+        circle.speed = 0.5;
+        
+        circleText = this.add.text(config.width * 0.2, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+
+
+        // scoreText
+        scoreText = this.add.text(config.width/6, 5, '0', { font: '20px Arial', fill: '#ffff'});
+
         // timer
         info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
         timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
     }
 
     update(){
+
+        //
+        circle.y += circle.speed;
+
+        if(circle.y >= circle.minY && circle.speed > 0){
+            circle.speed *= -1;
+        }else if(circle.y <= circle.maxY && circle.speed < 0){
+            circle.speed *= -1;
+        }
+
         // bg animation
         this.background.tilePositionY -= 0.5;
+
+        // scoreText
+        scoreText.setText('Score : ' + score);
         
         // timer
         info.setText('Time: ' + Math.floor(gameTime - timer.getElapsed()));
@@ -166,7 +202,7 @@ class gameScene extends Phaser.Scene {
                 playerClick = 1;
 
                 if(isNearTest(tempObj, this) && isThree(tempObj, this)){
-                    score+=100;
+
                     playerStepNum++;
                     if(!isMute){
                         // goodChoiceSound.play();
@@ -179,12 +215,17 @@ class gameScene extends Phaser.Scene {
                     objsID = nullInTop(objsID);//сдвигаем все элементы вниз
                     objsID = addNewElementsID(objsID);//заменяем id 0 на новый.
                     
+                    circleText.setText(circleGoodText[Math.round(Math.random() * circleGoodText.length)]);
+
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }else{
                     playerStepNum++;
                     if(!isMute){
                         noGoodChoiceSound.play()
                     }
+
+                    circleText.setText(circleNoGoodText[Math.round(Math.random() * circleNoGoodText.length)]);
+
                     updateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }
                 break;
@@ -271,15 +312,21 @@ class gameScene extends Phaser.Scene {
 }
 
 function changeObjects(){
+    let tempIdObjs = 0;
+    
     for (let i = 0; i < objsID.length; i++) {
         for (let j = 0; j < objsID[i].length; j++) {
             if(objsID[i][j] == objsID[i][j+1] && objsID[i][j] == objsID[i][j+2]){
                 // objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 // objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
                 // objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
+                tempIdObjs = objsID[i][j];
+               
+
                 objsID[i][j] = 0;
                 objsID[i][j+1] = 0;
                 objsID[i][j+2] = 0;
+
             }
         }
     }
@@ -290,13 +337,19 @@ function changeObjects(){
                 // objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 // objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
                 // objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
+                tempIdObjs = objsID[i][j];
+                
                 objsID[j][i] = 0;//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 objsID[j+1][i] = 0;
                 objsID[j+2][i] = 0;
+
             }
         }
     }
 
+    // score += objScorePoint[tempIdObjs];
+    // console.log(objsID);
+    // console.log(objScorePoint[tempIdObjs]);
     return objsID;
 }
 
@@ -336,6 +389,7 @@ function gameOver(){
 }
 
 function isThree(tempObj, thisObj){
+
     let col = 0;
     
     let tempObjsID = objsID.map(function(arr) {
@@ -363,6 +417,7 @@ function isThree(tempObj, thisObj){
     }
 
     if(col > 0){
+
         return true;
     }else{
         return false;
