@@ -93,8 +93,8 @@ class gameScene extends Phaser.Scene {
         let sound_on;
         let sound_off;
         if(isMobile){
-            sound_on = this.add.image(config.width * 0.05, config.height * 0.05, "sound_on");
-            sound_off = this.add.image(config.width * 0.05, config.height * 0.05, "sound_off");
+            sound_on = this.add.image(config.width * 0.08, config.height * 0.08, "sound_on");
+            sound_off = this.add.image(config.width * 0.08, config.height * 0.08, "sound_off");
         }else{
             sound_on = this.add.image(config.width * 0.05, config.height * 0.05, "sound_on");
             sound_off = this.add.image(config.width * 0.05, config.height * 0.05, "sound_off");
@@ -154,7 +154,7 @@ class gameScene extends Phaser.Scene {
         // magic circle
         if(isMobile){
             circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle');
-            circleText = this.add.text(config.width * 0.1, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+            circleText = this.add.text(config.width * 0.1, config.height * 0.9, '', { font: '20px Arial', fill: '#ffff'})
         }else{
             circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle');
             circleText = this.add.text(config.width * 0.15, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
@@ -168,7 +168,11 @@ class gameScene extends Phaser.Scene {
         scoreText = this.add.text(config.width/6, 5, '0', { font: '20px Arial', fill: '#ffff'});
 
         // timer
-        info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
+        if(isMobile){
+            info = this.add.text(config.width * 0.6, 5, '', { font: '20px Arial', fill: '#ffff'});
+        }else{
+            info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
+        }
         timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
     }
 
