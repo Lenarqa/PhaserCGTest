@@ -20,6 +20,8 @@ var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
 var circle;
+var question;
+var questionIsVisible = false;
 
 // text
 var info;
@@ -64,6 +66,9 @@ class gameScene extends Phaser.Scene {
         //sounds btn
         this.load.image('sound_on', 'assets/img/sound_on.png');
         this.load.image('sound_off', 'assets/img/sound_off.png');
+
+        //question btn
+        this.load.image('question', 'assets/img/question.png');
 
 
         // audio 
@@ -163,12 +168,9 @@ class gameScene extends Phaser.Scene {
         }
         circle.setScale(2);
         circle.on('pointerdown', this.circleClick, this);
-        // 'pointerdown', this.chooseObj, this.obj
-
         circle.maxY = config.height * 0.85;
         circle.minY = config.height * 0.9;
         circle.speed = 0.5;
-        
 
         // scoreText
         scoreText = this.add.text(config.width/6, 5, '0', { font: '20px Arial', fill: '#ffff'});
@@ -180,11 +182,69 @@ class gameScene extends Phaser.Scene {
             info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
         }
         timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
+
+        // question
+        if(isMobile){
+            question = this.add.image(config.width * 0.078, config.height * 0.22, 'question').setInteractive();
+        }else{
+            question = this.add.image(config.width * 0.05, config.height * 0.17, 'question').setInteractive();
+        }
+        question.on('pointerdown', this.questionClick, this);
+        question.setTintFill(0xffffff);
+
+        //question bg
+        if(isMobile){
+            this.helpBg =this.add.rectangle(config.width * 0.42, config.height * 0.5, 210, 300, 0xffffff);
+        }else{
+            this.helpBg =this.add.rectangle(config.width * 0.3, config.height * 0.4, 210, 300, 0xffffff);
+        }
+        this.helpBg.setVisible(false);
+
+        //question text
+        this.helpText = [];
+        
+        if(isMobile){
+            this.helpText.push(this.add.text(config.width * 0.3, config.height * 0.1,'HELP',{ font: '30px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.2,'№1 Collect 3 \nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.48,'№2 For every three\ncollected, you get\n100 points',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.7,'№3 Сollect maximum \npoints',{ font: '20px Arial', fill: '#000000'}));
+        }else{
+            this.helpText.push(this.add.text(config.width * 0.2, config.height * 0.1,'HELP',{ font: '30px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.2,'№1 Collect 3 \nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.4,'№2 For every three\ncollected, you get\n100 points',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.55,'№3 Сollect maximum \npoints',{ font: '20px Arial', fill: '#000000'}));
+        }
+
+        this.helpText.forEach((el)=>{
+            el.setVisible(false);
+            el.setDepth(2);
+        });
+    }
+
+    questionClick(){
+        if(questionIsVisible){
+            console.log("не видно");            
+            this.helpBg.setVisible(false);
+            questionIsVisible = false;
+            this.helpText.forEach((el)=>{
+                el.setVisible(false);
+            });
+            console.log(this.helpText.length)
+        }else{
+            this.helpText.forEach((el)=>{
+                el.setVisible(true);
+            });
+            console.log("видно");
+            this.helpBg.setVisible(true);
+            questionIsVisible = true;
+           
+            // console.log('question Click');
+            // bg = this.add.rectangle(config.width * 0.45, config.height * 0.45, 300, 300, 0xffffff);
+            
+        }
     }
 
     circleClick(){
-        console.log("Click to circle");
-        // circleText.setText(circleClickText[Math.random() * circleClickText.length]);
         circleText.setText(circleClickText[Math.round(Math.random() * circleClickText.length)]);
     }
 
