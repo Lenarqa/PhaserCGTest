@@ -10,7 +10,9 @@ var objsTitle =     ['', 'case', 'fish', 'money', 'fire', 'tent', 'book'];
 var objScorePoint = [0,   300,    10,      200,     100,     50,   150];
 var circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты молодец!', 'Хороший ход!', 
                         'Отличное решение!', 'Невероятно!', 'Как ты это делаешь?!', 'Вот это да!'];
-var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача']
+var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача'];
+var circleClickText = ['Не тыкай меня!', 'Лучше ищи три в ряд!', 'Я шарик!', 'Меня зовут Эрни', 'Собери побольше очков!',
+                            'Помни время ограничено!']
 var isNear = false;
 var isGameOver = false;
 var gameTime = 30000; // в мл cек
@@ -153,16 +155,20 @@ class gameScene extends Phaser.Scene {
 
         // magic circle
         if(isMobile){
-            circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle');
+            circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle').setInteractive();
             circleText = this.add.text(config.width * 0.1, config.height * 0.9, '', { font: '20px Arial', fill: '#ffff'})
         }else{
-            circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle');
+            circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle').setInteractive();;
             circleText = this.add.text(config.width * 0.15, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
         }
         circle.setScale(2);
+        circle.on('pointerdown', this.circleClick, this);
+        // 'pointerdown', this.chooseObj, this.obj
+
         circle.maxY = config.height * 0.85;
         circle.minY = config.height * 0.9;
         circle.speed = 0.5;
+        
 
         // scoreText
         scoreText = this.add.text(config.width/6, 5, '0', { font: '20px Arial', fill: '#ffff'});
@@ -174,6 +180,12 @@ class gameScene extends Phaser.Scene {
             info = this.add.text(config.width/2.4, 5, '', { font: '20px Arial', fill: '#ffff'});
         }
         timer = this.time.addEvent({ delay: gameTime, callback: gameOver, callbackScope: this });
+    }
+
+    circleClick(){
+        console.log("Click to circle");
+        // circleText.setText(circleClickText[Math.random() * circleClickText.length]);
+        circleText.setText(circleClickText[Math.round(Math.random() * circleClickText.length)]);
     }
 
     update(){
@@ -286,7 +298,7 @@ class gameScene extends Phaser.Scene {
                     obj.setScale(1.3);
                 }
                 
-                obj.on('pointerdown', this.chooseObj, this.obj,);
+                obj.on('pointerdown', this.chooseObj, this.obj);
                 
                 obj.on('pointerout', function(){
                     if(isMobile){
@@ -319,7 +331,8 @@ class gameScene extends Phaser.Scene {
 }
 
 function changeObjects(){
-    let tempIdObjs = 0;
+    // let tempIdObjs = 0;
+    // let tempIdObjs2 = 0;
     
     for (let i = 0; i < objsID.length; i++) {
         for (let j = 0; j < objsID[i].length; j++) {
@@ -327,7 +340,7 @@ function changeObjects(){
                 // objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 // objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
                 // objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
-                tempIdObjs = objsID[i][j];
+                // tempIdObjs = objsID[i][j];
                
 
                 objsID[i][j] = 0;
@@ -344,7 +357,7 @@ function changeObjects(){
                 // objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 // objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
                 // objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
-                tempIdObjs = objsID[i][j];
+                // tempIdObjs2 = objsID[i][j];
                 
                 objsID[j][i] = 0;//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
                 objsID[j+1][i] = 0;
@@ -355,6 +368,9 @@ function changeObjects(){
     }
 
     // score += objScorePoint[tempIdObjs];
+    // score += objScorePoint[tempIdObjs2];
+    // tempIdObjs = 0;
+    // tempIdObjs2 = 0;
     // console.log(objsID);
     // console.log(objScorePoint[tempIdObjs]);
     return objsID;
