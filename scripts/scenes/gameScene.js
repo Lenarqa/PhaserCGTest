@@ -1,5 +1,5 @@
 //game config vars
-var bestScore;
+// var bestScore;
 var MAP_SIZE = 8;
 var playerClick = 1;
 var objsID = [];//двумерный массив с id каждого объекта
@@ -12,10 +12,10 @@ var circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты 
                         'Отличное решение!', 'Невероятно!', 'Как ты это делаешь?!', 'Вот это да!'];
 var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача'];
 var circleClickText = ['Не тыкай меня!', 'Лучше ищи три в ряд!', 'Я шарик!', 'Меня зовут Эрни', 'Собери побольше очков!',
-                            'Помни время ограничено!']
+                            'Помни время ограничено!'];
 var isNear = false;
 var isGameOver = false;
-var gameTime = 5000;// в мл cек
+var gameTime = 60000;// в мл cек
 var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
@@ -59,7 +59,7 @@ class gameScene extends Phaser.Scene {
         this.load.image("tent", "assets/img/objects/tent.png");
 
         // circle
-        this.load.image('circle', "assets/img/circle.png")
+        this.load.image('circle', "assets/img/circle.png");
 
         //sounds btn
         this.load.image('sound_on', 'assets/img/sound_on.png');
@@ -159,10 +159,10 @@ class gameScene extends Phaser.Scene {
         // magic circle
         if(isMobile){
             circle = this.physics.add.sprite(config.width * 0.05, config.height * 0.9, 'circle').setInteractive();
-            circleText = this.add.text(config.width * 0.1, config.height * 0.9, '', { font: '20px Arial', fill: '#ffff'})
+            circleText = this.add.text(config.width * 0.1, config.height * 0.9, '', { font: '20px Arial', fill: '#ffff'});
         }else{
-            circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle').setInteractive();;
-            circleText = this.add.text(config.width * 0.15, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'})
+            circle = this.physics.add.sprite(config.width * 0.1, config.height * 0.9, 'circle').setInteractive();
+            circleText = this.add.text(config.width * 0.15, config.height * 0.87, '', { font: '20px Arial', fill: '#ffff'});
         }
         circle.setScale(2);
         circle.on('pointerdown', this.circleClick, this);
@@ -227,7 +227,6 @@ class gameScene extends Phaser.Scene {
             this.helpText.forEach((el)=>{
                 el.setVisible(false);
             });
-            console.log(this.helpText.length)
         }else{
             this.helpText.forEach((el)=>{
                 el.setVisible(true);
@@ -235,10 +234,6 @@ class gameScene extends Phaser.Scene {
             console.log("видно");
             this.helpBg.setVisible(true);
             questionIsVisible = true;
-           
-            // console.log('question Click');
-            // bg = this.add.rectangle(config.width * 0.45, config.height * 0.45, 300, 300, 0xffffff);
-            
         }
     }
 
@@ -278,7 +273,7 @@ class gameScene extends Phaser.Scene {
 
                 playerClick = 1;
 
-                if(isNearTest(tempObj, this) && isThree(tempObj, this)){
+                if(IsNearTest(tempObj, this) && isThree(tempObj, this)){
                     score += 100;
                     playerStepNum++;
                     if(!isMute){
@@ -286,24 +281,24 @@ class gameScene extends Phaser.Scene {
                         woohooSound.play(); //второй вариант звука при уничтожении тройки.
                     }
 
-                    objsID = swapObjs(tempObj, this, objsID);
-                    updateMap(MAP_SIZE, objsID, gameObjs, THIS);
+                    objsID = SwapObjs(tempObj, this, objsID);
+                    UpdateMap(MAP_SIZE, objsID, gameObjs, THIS);
                     objsID = changeObjects();//удаляем 3
                     objsID = nullInTop(objsID);//сдвигаем все элементы вниз
                     objsID = addNewElementsID(objsID);//заменяем id 0 на новый.
                     
                     circleText.setText(circleGoodText[Math.round(Math.random() * circleGoodText.length)]);
 
-                    updateMap(MAP_SIZE, objsID, gameObjs, THIS);
+                    UpdateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }else{
                     playerStepNum++;
                     if(!isMute){
-                        noGoodChoiceSound.play()
+                        noGoodChoiceSound.play();
                     }
 
                     circleText.setText(circleNoGoodText[Math.round(Math.random() * circleNoGoodText.length)]);
 
-                    updateMap(MAP_SIZE, objsID, gameObjs, THIS);
+                    UpdateMap(MAP_SIZE, objsID, gameObjs, THIS);
                 }
                 break;
             }
@@ -336,9 +331,9 @@ class gameScene extends Phaser.Scene {
             objsID[i] = [];
             for(let j = 0; j < MAP_SIZE; j++){
                 if(isMobile){
-                    x+=50
+                    x += 50;
                 }else{
-                    x+=45;
+                    x += 45;
                 }
                 let objId = Math.round(Math.random() * (6-1) + 1);
                 objsID[i][j] = objId;
@@ -360,7 +355,7 @@ class gameScene extends Phaser.Scene {
                 
                 obj.on('pointerout', function(){
                     if(isMobile){
-                        this.setScale(1.3)
+                        this.setScale(1.3);
                     }else{
                         this.setScale(1);
                     }
@@ -399,7 +394,6 @@ function changeObjects(){
                 // objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
                 // objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
                 // tempIdObjs = objsID[i][j];
-               
 
                 objsID[i][j] = 0;
                 objsID[i][j+1] = 0;
@@ -496,12 +490,11 @@ function isThree(tempObj, thisObj){
         return arr.slice();
     });
 
-    tempObjsID = swapObjs(tempObj, thisObj, tempObjsID);
+    tempObjsID = SwapObjs(tempObj, thisObj, tempObjsID);
     
     for (let i = 0; i < tempObjsID.length; i++) {
         for (let j = 0; j < tempObjsID[i].length; j++) {
             if(tempObjsID[i][j] == tempObjsID[i][j+1] && tempObjsID[i][j] == tempObjsID[i][j+2]){
-                // console.log("три в ряд горизонталь");
                 col++;
             }
         }
@@ -510,14 +503,12 @@ function isThree(tempObj, thisObj){
     for (let i = 0; i < tempObjsID.length; i++) {
         for (let j = 0; j < tempObjsID[i].length-2; j++) {
             if(tempObjsID[j][i] == tempObjsID[j+1][i] && tempObjsID[j][i] == tempObjsID[j+2][i]){
-                // console.log("три в ряд вертикаль");
                 col++;
             }
         }
     }
 
     if(col > 0){
-
         return true;
     }else{
         return false;
@@ -566,7 +557,7 @@ function Restart(){
     THIS.scene.start('gameScene');
 }
 
- function swapObjs(tempObj, thisObj, objsID){
+ function SwapObjs(tempObj, thisObj, objsID){
     // test logs
     // console.log('swap')
     // console.log('tempID = ',objsID[thisObj.i][thisObj.j]);
@@ -582,7 +573,7 @@ function Restart(){
     return objsID;
 }
 
-function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
+function UpdateMap(MAP_SIZE, objsID, gameObjs, THIS){
 
     let x = 25;
     let y = 25;
@@ -593,16 +584,16 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
     for(let i = 0; i < MAP_SIZE; i++){
         
         if(isMobile){
-            y+=50;
+            y += 50;
         }else{
-            y+=45;
+            y += 45;
         }
 
         for(let j = 0; j < MAP_SIZE; j++){
             if(isMobile){
-                x+=50;
+                x += 50;
             }else{
-                x+=45;
+                x += 45;
             }
     
             let obj = THIS.add.sprite(x, y, objsTitle[objsID[i][j]]).setInteractive();
@@ -637,7 +628,7 @@ function updateMap(MAP_SIZE, objsID, gameObjs, THIS){
     }
 }
 
-function isNearTest(tempObj, thisObj){
+function IsNearTest(tempObj, thisObj){
     if((Math.abs(tempObj.i - thisObj.i) == 1) ||  (Math.abs(tempObj.j - thisObj.j) == 1)){
         if((tempObj.i == thisObj.i) || (tempObj.j == thisObj.j)){
             return true;
