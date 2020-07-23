@@ -1,5 +1,5 @@
 //game config vars
-
+var bestScore;
 var MAP_SIZE = 8;
 var playerClick = 1;
 var objsID = [];//двумерный массив с id каждого объекта
@@ -15,7 +15,7 @@ var circleClickText = ['Не тыкай меня!', 'Лучше ищи три в
                             'Помни время ограничено!']
 var isNear = false;
 var isGameOver = false;
-var gameTime = 30000; // в мл cек
+var gameTime = 5000;// в мл cек
 var isMute = true;
 var masksArr = [];//трехмерный массив масок
 var masksArrSize = [];//двумерный массив
@@ -32,8 +32,6 @@ var circleText;
 var timer;
 var playerStepNum = 0;//коилиство ходов игрока
 var score = 0;
-
-
 
 // sounds
 var bgMusic;
@@ -202,7 +200,7 @@ class gameScene extends Phaser.Scene {
 
         //question text
         this.helpText = [];
-        
+
         if(isMobile){
             this.helpText.push(this.add.text(config.width * 0.3, config.height * 0.1,'HELP',{ font: '30px Arial', fill: '#000000'}));
             this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.2,'№1 Collect 3 \nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
@@ -440,13 +438,16 @@ function gameOver(){
     gameObjs.clear(true);
     THIS.background.setDepth(2).setInteractive();
 
+    SaveBestResult(score);
+
     
     THIS.add.text(config.width * 0.30, config.height * 0.1,"Game Over", {font: "40px Arial", fill: "#fff"}).setDepth(10);
     THIS.add.text(config.width * 0.40, config.height * 0.2,"Results:", {font: "35px Arial", fill: "#fff"}).setDepth(10);
-    THIS.add.text(config.width * 0.42, config.height * 0.3,`score: ${score}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
-    THIS.add.text(config.width * 0.40, config.height * 0.4,`swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.42, config.height * 0.3,`Score: ${score}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.40, config.height * 0.4,`Swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
+    THIS.add.text(config.width * 0.35, config.height * 0.5,`Best score: ${bestScore}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
     
-    let restart = THIS.add.text(config.width * 0.36, config.height * 0.55,"RESTART", {font: "35px Arial", fill: "#fff"}).setDepth(10);
+    let restart = THIS.add.text(config.width * 0.36, config.height * 0.6,"RESTART", {font: "35px Arial", fill: "#fff"}).setDepth(10);
     restart.setInteractive();
     restart.setDepth(10);
 
@@ -468,6 +469,22 @@ function gameOver(){
         setTimeout(() => {
             bgMusic.resume();
         }, 2800);
+    }
+}
+
+function SaveBestResult(score){
+    
+    if(localStorage.getItem('bestScore') === null){
+        bestScore = 0;
+    }else{
+        bestScore = JSON.parse(localStorage.getItem('bestScore'));
+    }
+
+    if(score > bestScore){
+        bestScore = score;
+        localStorage.setItem('bestScore', JSON.stringify(bestScore));
+    }else{
+        return;
     }
 }
 
