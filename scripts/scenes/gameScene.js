@@ -273,7 +273,7 @@ class gameScene extends Phaser.Scene {
 
                 playerClick = 1;
 
-                if(IsNearTest(tempObj, this) && isThree(tempObj, this)){
+                if(isNearTest(tempObj, this) && isThree(tempObj, this)){
                     score += 100;
                     playerStepNum++;
                     if(!isMute){
@@ -281,7 +281,7 @@ class gameScene extends Phaser.Scene {
                         woohooSound.play(); //второй вариант звука при уничтожении тройки.
                     }
 
-                    objsID = SwapObjs(tempObj, this, objsID);
+                    objsID = swapObjs(tempObj, this, objsID);
                     UpdateMap(MAP_SIZE, objsID, gameObjs, THIS);
                     objsID = changeObjects();//удаляем 3
                     objsID = nullInTop(objsID);//сдвигаем все элементы вниз
@@ -342,8 +342,8 @@ class gameScene extends Phaser.Scene {
                 obj.i = i;
                 obj.j = j;
 
-                objId = AnalizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали при создании карты
-                objId = AnalizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали при создании карты
+                objId = analizHorizontalMap(objsID, obj);//убираем 3 в ряд по горизонтали при создании карты
+                objId = analizVerticalMap(objsID, obj);//убираем 3 в ряд по вертикали при создании карты
                 
                 obj = this.add.sprite(x, y, objsTitle[objId]).setInteractive();
                 
@@ -433,7 +433,7 @@ function gameOver(){
     gameObjs.clear(true);
     THIS.background.setDepth(2).setInteractive();
 
-    SaveBestResult(score);
+    saveBestResult(score);
 
     
     THIS.add.text(config.width * 0.30, config.height * 0.1,"Game Over", {font: "40px Arial", fill: "#fff"}).setDepth(10);
@@ -442,17 +442,17 @@ function gameOver(){
     THIS.add.text(config.width * 0.40, config.height * 0.4,`Swipes: ${playerStepNum}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
     THIS.add.text(config.width * 0.35, config.height * 0.5,`Best score: ${bestScore}`, {font: "30px Arial", fill: "#fff"}).setDepth(10);
     
-    let restart = THIS.add.text(config.width * 0.36, config.height * 0.6,"RESTART", {font: "35px Arial", fill: "#fff"}).setDepth(10);
-    restart.setInteractive();
-    restart.setDepth(10);
+    let restartVar = THIS.add.text(config.width * 0.36, config.height * 0.6,"RESTART", {font: "35px Arial", fill: "#fff"}).setDepth(10);
+    restartVar.setInteractive();
+    restartVar.setDepth(10);
 
-    restart.on('pointerdown', Restart, this);
+    restartVar.on('pointerdown', restart, this);
                 
-    restart.on('pointerout', function(){
+    restartVar.on('pointerout', function(){
         this.setTint(0xffffff);
     })
 
-    restart.on('pointerover', function(){
+    restartVar.on('pointerover', function(){
         this.setTint(0xf0ff00);
     })
 
@@ -467,7 +467,7 @@ function gameOver(){
     }
 }
 
-function SaveBestResult(score){
+function saveBestResult(score){
     
     if(localStorage.getItem('bestScore') === null){
         bestScore = 0;
@@ -491,7 +491,7 @@ function isThree(tempObj, thisObj){
         return arr.slice();
     });
 
-    tempObjsID = SwapObjs(tempObj, thisObj, tempObjsID);
+    tempObjsID = swapObjs(tempObj, thisObj, tempObjsID);
     
     for (let i = 0; i < tempObjsID.length; i++) {
         for (let j = 0; j < tempObjsID[i].length; j++) {
@@ -548,7 +548,7 @@ function nullInTop(objsID){
     return objsID;
 }
 
-function Restart(){
+function restart(){
     if(!isMute){
         goodChoiceSound.play();
     }
@@ -558,7 +558,7 @@ function Restart(){
     THIS.scene.start('gameScene');
 }
 
- function SwapObjs(tempObj, thisObj, objsID){
+ function swapObjs(tempObj, thisObj, objsID){
     // test logs
     // console.log('swap')
     // console.log('tempID = ',objsID[thisObj.i][thisObj.j]);
@@ -629,7 +629,7 @@ function UpdateMap(MAP_SIZE, objsID, gameObjs, THIS){
     }
 }
 
-function IsNearTest(tempObj, thisObj){
+function isNearTest(tempObj, thisObj){
     if((Math.abs(tempObj.i - thisObj.i) == 1) ||  (Math.abs(tempObj.j - thisObj.j) == 1)){
         if((tempObj.i == thisObj.i) || (tempObj.j == thisObj.j)){
             return true;
@@ -637,7 +637,7 @@ function IsNearTest(tempObj, thisObj){
     }
 }
 
-function AnalizHorizontalMap(objsID, obj){
+function analizHorizontalMap(objsID, obj){
 
     if(obj.j == 0 || obj.j == 1){
         return  objsID[obj.i][obj.j];
@@ -654,7 +654,7 @@ function AnalizHorizontalMap(objsID, obj){
     }
 }
 
-function AnalizVerticalMap(objsID, obj){
+function analizVerticalMap(objsID, obj){
     if(obj.i == 0 || obj.i == 1){
         return  objsID[obj.i][obj.j];
     }else if((objsID[obj.i-1][obj.j] == objsID[obj.i][obj.j]) && (objsID[obj.i-2][obj.j] == objsID[obj.i][obj.j])){
