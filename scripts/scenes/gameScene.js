@@ -1,44 +1,44 @@
 //game config vars
 // var bestScore;
-var MAP_SIZE = 8;
-var playerClick = 1;
-var objsID = [];//двумерный массив с id каждого объекта
-var tempObj = {i: 0, j: 0};
-var gameObjs; //Phaser group
-var THIS;
-var objsTitle =     ['', 'case', 'fish', 'money', 'fire', 'tent', 'book'];
-var objScorePoint = [0,   300,    10,      200,     100,     50,   150];
-var circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты молодец!', 'Хороший ход!', 
+let MAP_SIZE = 8;
+let playerClick = 1;
+let objsID = [];//двумерный массив с id каждого объекта
+let tempObj = {i: 0, j: 0};
+let gameObjs; //Phaser group
+let THIS;
+let objsTitle =     ['', 'case', 'fish', 'money', 'fire', 'tent', 'book'];
+let objScorePoint = [0,   300,    10,      200,     100,     50,   150];
+let circleGoodText = ['Неплохо!', 'Вот это поворот!', 'Ты молодец!', 'Хороший ход!', 
                         'Отличное решение!', 'Невероятно!', 'Как ты это делаешь?!', 'Вот это да!'];
-var circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача'];
-var circleClickText = ['Не тыкай меня!', 'Лучше ищи три в ряд!', 'Я шарик!', 'Меня зовут Эрни', 'Собери побольше очков!',
+let circleNoGoodText = ['Плохой ход', 'Ну и что ты делаешь?', 'Не очень хорошее решение', 'Эхх неудача'];
+let circleClickText = ['Не тыкай меня!', 'Лучше ищи три в ряд!', 'Я шарик!', 'Меня зовут Эрни', 'Собери побольше очков!',
                             'Помни время ограничено!'];
-var isNear = false;
-var isGameOver = false;
-var gameTime = 60000;// в мл cек
-var isMute = true;
-var masksArr = [];//трехмерный массив масок
-var masksArrSize = [];//двумерный массив
-var circle;
-var question;
-var questionIsVisible = false;
+let isNear = false;
+let isGameOver = false;
+let gameTime = 60000;// в мл cек
+let isMute = true;
+let masksArr = [];//трехмерный массив масок
+let masksArrSize = [];//двумерный массив
+let circle;
+let question;
+let questionIsVisible = false;
 
 // text
-var info;
-var scoreText;
-var circleText;
+let info;
+let scoreText;
+let circleText;
 
 // stats
-var timer;
-var playerStepNum = 0;//коилиство ходов игрока
-var score = 0;
+let timer;
+let playerStepNum = 0;//коилиство ходов игрока
+let score = 0;
 
 // sounds
-var bgMusic;
-var theEndMusic;
-var goodChoiceSound;
-var noGoodChoiceSound;
-var woohooSound;
+let bgMusic;
+let theEndMusic;
+let goodChoiceSound;
+let noGoodChoiceSound;
+let woohooSound;
 
 class gameScene extends Phaser.Scene {
     constructor() {
@@ -203,12 +203,12 @@ class gameScene extends Phaser.Scene {
 
         if(isMobile){
             this.helpText.push(this.add.text(config.width * 0.3, config.height * 0.1,'HELP',{ font: '30px Arial', fill: '#000000'}));
-            this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.2,'№1 Collect 3 \nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.2,'№1 Collect 3 or more\nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
             this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.48,'№2 For every three\ncollected, you get\n100 points',{ font: '20px Arial', fill: '#000000'}));
             this.helpText.push(this.add.text(config.width * 0.15, config.height * 0.7,'№3 Сollect maximum \npoints',{ font: '20px Arial', fill: '#000000'}));
         }else{
             this.helpText.push(this.add.text(config.width * 0.2, config.height * 0.1,'HELP',{ font: '30px Arial', fill: '#000000'}));
-            this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.2,'№1 Collect 3 \nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
+            this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.2,'№1 Collect 3 or more\nidentical elements\nvertically or\nhorizontally',{ font: '20px Arial', fill: '#000000'}));
             this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.4,'№2 For every three\ncollected, you get\n100 points',{ font: '20px Arial', fill: '#000000'}));
             this.helpText.push(this.add.text(config.width * 0.1, config.height * 0.55,'№3 Сollect maximum \npoints',{ font: '20px Arial', fill: '#000000'}));
         }
@@ -383,48 +383,49 @@ class gameScene extends Phaser.Scene {
     }
 }
 
-function changeObjects(){
-    // let tempIdObjs = 0;
-    // let tempIdObjs2 = 0;
+function changeObjects(){    
+    for (let i = 0; i < objsID.length; i++) {
     
-    for (let i = 0; i < objsID.length; i++) {
-        for (let j = 0; j < objsID[i].length; j++) {
-            if(objsID[i][j] == objsID[i][j+1] && objsID[i][j] == objsID[i][j+2]){
-                // objsID[i][j] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
-                // objsID[i][j+1] = Math.round(Math.random() * (6-1) + 1);
-                // objsID[i][j+2] = Math.round(Math.random() * (6-1) + 1);
-                // tempIdObjs = objsID[i][j];
+        for (let j = 0; j < objsID.length; j++) {
 
-                objsID[i][j] = 0;
-                objsID[i][j+1] = 0;
-                objsID[i][j+2] = 0;
-
+            let coll = 0;
+            
+            for (let z = 0; z < objsID.length; z++) {
+                if(objsID[i][j] == objsID[i][z] && objsID[i][j] == objsID[i][j+coll]){
+                    coll++;
+                }
+            }
+    
+            if(coll > 2){
+                for (let z = j; z < j + coll; z++) {
+                    objsID[i][z] = 0;
+                }
             }
         }
     }
 
-    for (let i = 0; i < objsID.length; i++) {
-        for (let j = 0; j < objsID[i].length-2; j++) {
-            if(objsID[j][i] == objsID[j+1][i] && objsID[j][i] == objsID[j+2][i]){
-                // objsID[j][i] = Math.round(Math.random() * (6-4) + 1);//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
-                // objsID[j+1][i] = Math.round(Math.random() * (6-1) + 1);
-                // objsID[j+2][i] = Math.round(Math.random() * (6-1) + 1);
-                // tempIdObjs2 = objsID[i][j];
-                
-                objsID[j][i] = 0;//уменьшаем вероятность выпадения 3 одинаковых элементов сдвинув min на 4
-                objsID[j+1][i] = 0;
-                objsID[j+2][i] = 0;
-
+    for (let i = 0; i < objsID.length; i++) {   
+        for (let j = 0; j < objsID.length-2; j++) {
+            
+            let coll = 0;
+            
+            for (let z = 0; z < objsID.length; z++) {
+                if(j + coll > objsID.length-1){
+                    coll--;
+                }
+                if(objsID[j][i] == objsID[z][i] && objsID[j][i] == objsID[j+coll][i]){
+                    coll++;
+                }
+            }
+    
+            if(coll > 2){
+                for (let z = j; z < j + coll; z++) {
+                    objsID[z][i] = 0;
+                }
             }
         }
     }
 
-    // score += objScorePoint[tempIdObjs];
-    // score += objScorePoint[tempIdObjs2];
-    // tempIdObjs = 0;
-    // tempIdObjs2 = 0;
-    // console.log(objsID);
-    // console.log(objScorePoint[tempIdObjs]);
     return objsID;
 }
 
