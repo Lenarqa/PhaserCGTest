@@ -242,8 +242,6 @@ class gameScene extends Phaser.Scene {
     }
 
     update(){
-
-        //
         circle.y += circle.speed;
 
         if(circle.y >= circle.minY && circle.speed > 0){
@@ -286,6 +284,7 @@ class gameScene extends Phaser.Scene {
                     objsID = changeObjects();//удаляем 3
                     objsID = nullInTop(objsID);//сдвигаем все элементы вниз
                     objsID = addNewElementsID(objsID);//заменяем id 0 на новый.
+                    objsID = deleteThreeInLine(objsID);
                     
                     circleText.setText(circleGoodText[Math.round(Math.random() * circleGoodText.length)]);
 
@@ -429,6 +428,19 @@ function changeObjects(){
     return objsID;
 }
 
+
+function deleteThreeInLine(objsID){
+    for (let i = 0; i < objsID.length; i++) {
+        for (let j = 0; j < objsID.length; j++) {
+            if(objsID[i][j] == objsID[i][j+1] == objsID[i][j+2]){
+                objsID[i][j] = Math.round(Math.random() * (6-1) + 1);
+            }
+        }
+    }
+
+    return objsID;
+}
+
 function gameOver(){
     gameObjs.clear(true);
     THIS.background.setDepth(2).setInteractive();
@@ -522,12 +534,9 @@ function addNewElementsID(objsID){
             if(objsID[i][j] == 0){
                 objsID[i][j] = Math.round(Math.random() * (6-1) + 1);
             }
-
-            if(objsID[i][j] == objsID[i][j+1] == objsID[i][j+2]){
-                objsID[i][j] = objsID[i][j] = Math.round(Math.random() * (6-1) + 1);
-            }
         }
     }
+
     return objsID;
 }
 
