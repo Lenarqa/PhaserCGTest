@@ -221,7 +221,6 @@ class gameScene extends Phaser.Scene {
 
     questionClick(){
         if(questionIsVisible){
-            console.log("не видно");            
             this.helpBg.setVisible(false);
             questionIsVisible = false;
             this.helpText.forEach((el)=>{
@@ -231,8 +230,8 @@ class gameScene extends Phaser.Scene {
             this.helpText.forEach((el)=>{
                 el.setVisible(true);
             });
-            console.log("видно");
             this.helpBg.setVisible(true);
+            this.helpBg.setDepth(2);
             questionIsVisible = true;
         }
     }
